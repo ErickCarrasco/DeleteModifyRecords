@@ -10,7 +10,7 @@ int main(){
 	ofstream temp;
 	ofstream save;
 	int clave, Bpass;
-	char nombre[20];
+	char nombre[20], nName[20];
 
 	save.open("File.txt", ios::app);
 
@@ -62,6 +62,37 @@ int main(){
 	if (selection == 2){
 		readr.open("File.txt");//Archivo Principal
 		temp.open("Temp.txt");//Archivo temp para guardar datos a sobreescribir
+		readr>>nombre;
+		bool found = false;
+		cout<<"Enter a password for record modification: "<<endl;
+		cin>>Bpass;
+		while(!readr.eof()){
+			readr>>clave;
+			if (clave==Bpass){
+				found = true;
+				cout<<"Name-> "<<nombre<<endl;
+				cout<<"Pass-> "<<clave<<endl;
+				cout<<endl;
+				cout<<"New name (can insert the same one) "<<endl;
+				cin>>nName;
+				temp<<nName<<" "<<clave<<endl;
+				cout<<"Modification completed.."<<endl;
+			}
+			else{
+				temp<<nombre<<" "<<clave<<endl;
+			}
+			readr>>nombre;
+		}
+
+		if (found==false){
+			cout<<"Password not found on file.. "<<endl;
+		}
+		readr.close();
+		temp.close();
+		remove("File.txt");
+		rename("Temp.txt", "File.txt");
+
+
 		
 	}
 
