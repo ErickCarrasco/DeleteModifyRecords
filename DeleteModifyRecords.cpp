@@ -2,7 +2,11 @@
 #include <string>
 #include <bits/stdc++.h>
 #include <fstream>
+#include <vector>
+
 using namespace std;
+
+vector<int> getByteSize(string);
 
 int main(){
 	//Variables 
@@ -12,22 +16,27 @@ int main(){
 	int clave, Bpass;
 	char nombre[20], nName[20];
 
-	save.open("File.txt", ios::app);
+	//Variables Records
+	char delimiter='|';
+	char fielddelimiter=',';
+	string recordextract;
+	save.open("FileAlpha.txt", ios::app);
 
 
 	//Menu
 	cout<<"--- Menu --- "<<endl;
 	cout<<"1/ Delete "<<endl;
 	cout<<"2/ Modify "<<endl;
-	cout<<"3/ Exit "<<endl;
+	cout<<"3/ Show Data "<<endl;
+	cout<<"4/ Exit "<<endl;
 	int selection;
 	cout<<"Enter your data: "<<endl;
 	cin>>selection;
 
 	//Selection 1 -> Delete Record
 	if (selection == 1){
-		readr.open("File.txt");//Archivo Principal
-		temp.open("Temp.txt");//Archivo temp para guardar datos almacenados
+		readr.open("FileAlpha.txt");//Archivo Principal
+		temp.open("TempAlpha.txt");//Archivo temp para guardar datos almacenados
 		readr>>nombre;
 		bool found = false;
 		cout<<"Enter a password for elimination: "<<endl;
@@ -53,15 +62,15 @@ int main(){
 		}
 		readr.close();
 		temp.close();
-		remove("File.txt");
-		rename("Temp.txt","File.txt");
+		remove("FileAlpha.txt");
+		rename("TempAlpha.txt","FileAlpha.txt");
 		//break;
 	}
 
 	//Selection 2 -> Modify Record
 	if (selection == 2){
-		readr.open("File.txt");//Archivo Principal
-		temp.open("Temp.txt");//Archivo temp para guardar datos a sobreescribir
+		readr.open("FileAlpha.txt");//Archivo Principal
+		temp.open("TempAlpha.txt");//Archivo temp para guardar datos a sobreescribir
 		readr>>nombre;
 		bool found = false;
 		cout<<"Enter a password for record modification: "<<endl;
@@ -89,11 +98,63 @@ int main(){
 		}
 		readr.close();
 		temp.close();
-		remove("File.txt");
-		rename("Temp.txt", "File.txt");
+		remove("FileAlpha.txt");
+		rename("TempAlpha.txt", "FileAlpha.txt");
 		
 	}
 
+	//Selection 3 -> Show Data
+	if (selection == 3){
+		//readr.open("FileAlpha.txt");//Reading main file
+		vector<int> ExtractedBytes;
+		ExtractedBytes=getByteSize("FileAlpha.txt");
+		readr.open("FileAlpha.txt");
+		//int i=0;
+
+		/*
+		while(!readr.eof()){
+			int sizeB=ExtractedBytes[i];
+			i++;
+			cout<<"Size "<<sizeB<<endl;
+			char extraction[sizeB];
+			readr>>extraction;
+			cout<<"Record "<<i<<" "<<extraction<<endl;
+		}
+		*/
+		string extractedRecord;
+		string str;
+		while(getline(readr, str, '|')){
+			cout<<str<<endl;
+			//readr>>extractedRecord;
+			//cout<<"Data: "<<extractedRecord<<endl;
+		}
+
+
+
+	}
 
     return 0;
 }
+
+vector<int> getByteSize(string filename){
+	vector<int> ByteData;
+	ifstream Lectura;
+	Lectura.open(filename);
+	char letter;
+	int counter=0;
+	while(!Lectura.eof()){
+		
+		Lectura>>letter;
+		//cout<<letter<<" letter"<<endl;
+		if (letter!='|'){
+			counter++;
+			//cout<<counter<<" CONTADOR"<<endl;
+		}
+		if(letter=='|'){
+			ByteData.push_back(counter);
+			counter=0;
+		}
+	}
+	return ByteData;
+}
+
