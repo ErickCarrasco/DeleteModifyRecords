@@ -1,1 +1,1 @@
-Rodrigo,44,rodrix,|Iosef,54,isf,|
+*Rodrigo,44,rodrix,|Iosef,54,isf,|

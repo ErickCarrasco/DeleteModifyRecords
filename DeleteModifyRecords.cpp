@@ -41,7 +41,7 @@ int main(){
 	if (selection == 1){
 		/*
 		readr.open("FileAlpha.txt");//Archivo Principal
-		temp.open("TempAlpha.txt");//Archivo temp para guardar datos almacenados
+		temp.open("TempAlpha.txt");//Archivo temp para guardar datos temporalmente
 		readr>>nombre;
 		bool found = false;
 		cout<<"Enter a password for elimination: "<<endl;
@@ -72,26 +72,52 @@ int main(){
 		//break;
 		*/
 		readr.open("FileAlpha.txt");
+		temp.open("TempAlpha.txt");//Archivo temp para guardar datos temporalmente
 		string str;
 		string keyVerify;
 		cout<<"Ingrese el codigo del usuario a eliminar "<<endl;
 		cin>>keyVerify;
+		bool verifyKey;
+		bool processcompleted;
+		int processValidate=0;
 		while(getline(readr, str, '|')){
 			//cout<<str<<endl;
-			bool verifyKey=RecordVerify(str, keyVerify);
+			verifyKey=RecordVerify(str, keyVerify);
 			if (verifyKey==true){
+				processValidate=1;
 				cout<<"Datos encontrados.. "<<endl;
 				cout<<str<<endl;
 				cout<<"Desea eliminar el registro? [Y/n]"<<endl;
 				char decision;
 				cin>>decision;
-				cout<<"Process Completed"<<endl;
-				break;
+				if (decision='Y'||decision=='y'){
+					cout<<"Processing ... "<<endl;
+					string strbuild;
+					strbuild.append("*");
+					strbuild.append(str);
+					temp<<strbuild<<"|";
+					cout<<endl;
+					cout<<"Process Completed"<<endl;
+					
+				}
+				if (processValidate==1){
+					processcompleted=true;
+				}
+				
+				//break;
 			}else{
-				cout<<"Process could not be completed (File may be corrupted or record is nonexistent"<<endl;
+				temp<<str<<"|";
+				//cout<<"Process could not be completed (File may be corrupted or record is nonexistent"<<endl;
 			}
 
 		}
+		if (processcompleted==false){
+			cout<<"Data not found. File remains unchanged "<<endl;
+		}
+		readr.close();
+		temp.close();
+		remove("FileAlpha.txt");
+		rename("TempAlpha.txt","FileAlpha.txt");
 
 	}
 
