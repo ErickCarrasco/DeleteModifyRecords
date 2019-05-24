@@ -10,6 +10,8 @@ vector<int> getByteSize(string);
 
 bool RecordExtractor(string);
 
+bool RecordVerify(string, string);
+
 int main(){
 	//Variables 
 	ifstream readr;
@@ -37,6 +39,7 @@ int main(){
 
 	//Selection 1 -> Delete Record
 	if (selection == 1){
+		/*
 		readr.open("FileAlpha.txt");//Archivo Principal
 		temp.open("TempAlpha.txt");//Archivo temp para guardar datos almacenados
 		readr>>nombre;
@@ -67,6 +70,29 @@ int main(){
 		remove("FileAlpha.txt");
 		rename("TempAlpha.txt","FileAlpha.txt");
 		//break;
+		*/
+		readr.open("FileAlpha.txt");
+		string str;
+		string keyVerify;
+		cout<<"Ingrese el codigo del usuario a eliminar "<<endl;
+		cin>>keyVerify;
+		while(getline(readr, str, '|')){
+			//cout<<str<<endl;
+			bool verifyKey=RecordVerify(str, keyVerify);
+			if (verifyKey==true){
+				cout<<"Datos encontrados.. "<<endl;
+				cout<<str<<endl;
+				cout<<"Desea eliminar el registro? [Y/n]"<<endl;
+				char decision;
+				cin>>decision;
+				cout<<"Process Completed"<<endl;
+				break;
+			}else{
+				cout<<"Process could not be completed (File may be corrupted or record is nonexistent"<<endl;
+			}
+
+		}
+
 	}
 
 	//Selection 2 -> Modify Record
@@ -111,27 +137,14 @@ int main(){
 		vector<int> ExtractedBytes;
 		ExtractedBytes=getByteSize("FileAlpha.txt");
 		readr.open("FileAlpha.txt");
-		//int i=0;
 
-		/*
-		while(!readr.eof()){
-			int sizeB=ExtractedBytes[i];
-			i++;
-			cout<<"Size "<<sizeB<<endl;
-			char extraction[sizeB];
-			readr>>extraction;
-			cout<<"Record "<<i<<" "<<extraction<<endl;
-		}
-		*/
 		string extractedRecord;
 		string str;
 		while(getline(readr, str, '|')){
 			cout<<str<<endl;
 			bool rectify=RecordExtractor(str);
 		}
-
-
-
+		readr.close();
 	}
 
     return 0;
@@ -171,5 +184,24 @@ bool RecordExtractor(string chain){
 	}
 	cout<<chain<<endl;
 	return true;
+}
+
+bool RecordVerify(string chain, string keyComparer){
+	//string str;
+	string delimiterD=",";
+	string token;
+	size_t pos = 0;
+	bool found=false;
+	while((pos = chain.find(delimiterD)) != string::npos){
+		token = chain.substr(0,pos);//Function returns a substring of the object, starting at pos and lenght of npos
+		//cout<<"Token "<<token<<endl;
+		chain.erase(0, pos + delimiterD.length());
+		if (token==keyComparer){
+			found=true;
+		}
+
+	}
+	//cout<<chain<<endl;
+	return found;
 }
 
