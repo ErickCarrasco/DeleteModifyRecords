@@ -8,6 +8,8 @@ using namespace std;
 
 vector<int> getByteSize(string);
 
+bool RecordExtractor(string);
+
 int main(){
 	//Variables 
 	ifstream readr;
@@ -125,8 +127,7 @@ int main(){
 		string str;
 		while(getline(readr, str, '|')){
 			cout<<str<<endl;
-			//readr>>extractedRecord;
-			//cout<<"Data: "<<extractedRecord<<endl;
+			bool rectify=RecordExtractor(str);
 		}
 
 
@@ -156,5 +157,19 @@ vector<int> getByteSize(string filename){
 		}
 	}
 	return ByteData;
+}
+
+bool RecordExtractor(string chain){
+	//string str;
+	string delimiterD=",";
+	string token;
+	size_t pos = 0;
+	while((pos = chain.find(delimiterD)) != string::npos){
+		token = chain.substr(0,pos);//Function returns a substring of the object, starting at pos and lenght of npos
+		cout<<"Token "<<token<<endl;
+		chain.erase(0, pos + delimiterD.length());
+	}
+	cout<<chain<<endl;
+	return true;
 }
 
