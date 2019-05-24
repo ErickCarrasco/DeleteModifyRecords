@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 #include <fstream>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -11,6 +12,10 @@ vector<int> getByteSize(string);
 bool RecordExtractor(string);
 
 bool RecordVerify(string, string);
+
+vector<string> getMetaData(string);
+
+bool isNumber(string);
 
 int main(){
 	//Variables 
@@ -75,7 +80,7 @@ int main(){
 		temp.open("TempAlpha.txt");//Archivo temp para guardar datos temporalmente
 		string str;
 		string keyVerify;
-		cout<<"Ingrese el codigo del usuario a eliminar "<<endl;
+		cout<<"Ingrese el username del usuario a eliminar "<<endl;
 		cin>>keyVerify;
 		bool verifyKey;
 		bool processcompleted;
@@ -99,6 +104,8 @@ int main(){
 					cout<<endl;
 					cout<<"Process Completed"<<endl;
 					
+				}else{
+					cout<<"Record unchanged.. No changes were made to the file"<<endl;
 				}
 				if (processValidate==1){
 					processcompleted=true;
@@ -123,6 +130,7 @@ int main(){
 
 	//Selection 2 -> Modify Record
 	if (selection == 2){
+		/*
 		readr.open("FileAlpha.txt");//Archivo Principal
 		temp.open("TempAlpha.txt");//Archivo temp para guardar datos a sobreescribir
 		readr>>nombre;
@@ -154,7 +162,31 @@ int main(){
 		temp.close();
 		remove("FileAlpha.txt");
 		rename("TempAlpha.txt", "FileAlpha.txt");
-		
+		*/
+		readr.open("FileBeta.txt");
+		temp.open("TempBeta.txt");//Archivo temp para guardar datos temporalmente
+		string str;
+		string keyVerify;
+
+		//Metadata extraction
+		vector<string> metadataInfo= getMetaData("FileBeta.txt");
+
+		//Print Vector
+		for (int i = 0; i < metadataInfo.size(); ++i)
+		{
+			/* code */
+		}
+
+		//cout<<"Ingrese el username del usuario a eliminar "<<endl;
+		//cin>>keyVerify;
+		bool verifyKey;
+		bool processcompleted;
+		int processValidate=0;
+
+		readr.close();
+		temp.close();
+		remove("FileBeta.txt");
+		rename("TempBeta.txt","FileBeta.txt");
 	}
 
 	//Selection 3 -> Show Data
@@ -230,4 +262,63 @@ bool RecordVerify(string chain, string keyComparer){
 	//cout<<chain<<endl;
 	return found;
 }
+
+vector<string> getMetaData(string filePath){
+	ifstream readMD;//Opens file to extract the metadata
+	readMD.open(filePath);
+	string str;
+
+	//Reading first line containing the MetaData
+	bool addtoMetaDataVector;
+	int vectorSize=0;
+
+	//Vector containing data
+	vector<string> retValVector;
+
+
+	//Reading the file 
+	while(getline(readMD, str, '|')){
+		//Tokens to get the information
+		string delimiterD=",";
+		string token;
+		size_t pos = 0;
+		bool found=false;
+		bool foundnum=true;
+		while((pos = str.find(delimiterD)) != string::npos){
+			token = str.substr(0,pos);//Function returns a substring of the object, starting at pos and lenght of npos
+			cout<<"Token "<<token<<endl;
+			bool verifyIfNum=isNumber(token);
+			if (token=="campos"){
+				addtoMetaDataVector=false;
+			}else if (verifyIfNum==true){
+				vectorSize=atoi(token.c_str());
+				cout<<"Vector size: "<<vectorSize<<endl;
+
+				//Set size to vector
+				retValVector.resize(vectorSize);
+				addtoMetaDataVector=false;
+			}else{
+				addtoMetaDataVector=true;
+			}
+
+			if (addtoMetaDataVector==true){
+				retValVector.push_back(token);
+			}
+
+			str.erase(0, pos + delimiterD.length());
+
+		}
+		break;
+	}
+	readMD.close();
+}
+
+bool isNumber(string s) { 
+    for (int i = 0; i < s.length(); i++){ 
+        if (isdigit(s[i]) == false){ 
+            return false; 
+        }
+  	}
+    return true; 
+} 
 
