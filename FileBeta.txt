@@ -1,2 +1,1 @@
-campos,3,string,nombre,int,edad,string,username,|
-Rodrigo,44,rodrix,|Iosef,54,isf,|
+campos,3,string,nombre,int,edad,string,username,|Andres,44,rodrix,|Iosef,54,isf,|

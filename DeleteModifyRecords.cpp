@@ -17,6 +17,8 @@ vector<string> getMetaData(string);
 
 bool isNumber(string);
 
+string modifiedRecord(string, int);
+
 int main(){
 	//Variables 
 	ifstream readr;
@@ -130,6 +132,7 @@ int main(){
 
 	//Selection 2 -> Modify Record
 	if (selection == 2){
+
 		/*
 		readr.open("FileAlpha.txt");//Archivo Principal
 		temp.open("TempAlpha.txt");//Archivo temp para guardar datos a sobreescribir
@@ -163,6 +166,8 @@ int main(){
 		remove("FileAlpha.txt");
 		rename("TempAlpha.txt", "FileAlpha.txt");
 		*/
+
+
 		readr.open("FileBeta.txt");
 		temp.open("TempBeta.txt");//Archivo temp para guardar datos temporalmente
 		string str;
@@ -171,17 +176,55 @@ int main(){
 		//Metadata extraction
 		vector<string> metadataInfo= getMetaData("FileBeta.txt");
 
-		//Print Vector
-		for (int i = 0; i < metadataInfo.size(); ++i)
-		{
-			/* code */
+		/*Print Vector
+		CHECK ONLY
+		for (int i = 0; i < metadataInfo.size(); ++i){
+			cout<<"Vector Data: "<<metadataInfo.at(i)<<endl;
 		}
+		*/
 
-		//cout<<"Ingrese el username del usuario a eliminar "<<endl;
-		//cin>>keyVerify;
+		cout<<"Ingrese el username del usuario a editar "<<endl;
+		cin>>keyVerify;
 		bool verifyKey;
 		bool processcompleted;
 		int processValidate=0;
+		while(getline(readr, str, '|')){
+			verifyKey=RecordVerify(str, keyVerify);
+			if (verifyKey==true){
+				processValidate=1;
+				cout<<"Datos encontrados.. "<<endl;
+
+				//OptionsMenu to edit record
+				int menuitems=0;
+				for (int i = 0; i < metadataInfo.size(); ++i){
+					int remainder;
+					remainder = i % 2;
+					if (remainder!=0){
+						menuitems++;
+						cout<<menuitems<<" - "<<metadataInfo.at(i)<<endl;
+					}
+				}
+				int selection;
+				cout<<"Select a field to modify: "<<endl;
+				cin>>selection;
+				if (selection>0 && selection<=menuitems){
+					string newRecord = modifiedRecord(str, selection);
+					temp<<newRecord<<"|";
+				}else{
+					cout<<"Data out of range "<<endl;
+				}
+
+				if (processValidate==1){
+					processcompleted=true;
+				}
+
+			}else{
+				temp<<str<<"|";
+			}
+		}
+		if (processcompleted==false){
+			cout<<"Data not found. File remains unchanged "<<endl;
+		}
 
 		readr.close();
 		temp.close();
@@ -240,7 +283,7 @@ bool RecordExtractor(string chain){
 		cout<<"Token "<<token<<endl;
 		chain.erase(0, pos + delimiterD.length());
 	}
-	cout<<chain<<endl;
+	//cout<<chain<<endl;
 	return true;
 }
 
@@ -295,7 +338,7 @@ vector<string> getMetaData(string filePath){
 				cout<<"Vector size: "<<vectorSize<<endl;
 
 				//Set size to vector
-				retValVector.resize(vectorSize);
+				//retValVector.resize(vectorSize);
 				addtoMetaDataVector=false;
 			}else{
 				addtoMetaDataVector=true;
@@ -310,7 +353,9 @@ vector<string> getMetaData(string filePath){
 		}
 		break;
 	}
+
 	readMD.close();
+	return retValVector;
 }
 
 bool isNumber(string s) { 
@@ -322,3 +367,27 @@ bool isNumber(string s) {
     return true; 
 } 
 
+string modifiedRecord(string chain, int field){
+	int iterator=0;
+	string retVal;
+	string delimiterD=",";
+	string token;
+	size_t pos = 0;
+	while((pos = chain.find(delimiterD)) != string::npos){
+		iterator++;
+		token = chain.substr(0,pos);//Function returns a substring of the object, starting at pos and lenght of npos
+		//cout<<"Token "<<token<<endl;
+		if (iterator==field){
+			cout<<"Enter new data: "<<endl;
+			string newData;
+			cin>>newData;
+			retVal.append(newData);
+			retVal.append(",");
+		}else{
+			retVal.append(token);
+			retVal.append(",");
+		}
+		chain.erase(0, pos + delimiterD.length());
+	}
+	return retVal;
+}
